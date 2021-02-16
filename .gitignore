@@ -116,3 +116,5 @@ dist
 .pnp.*
 
 airdrop.csv
+airdrop.json
+airdropMerkle.json
