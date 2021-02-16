@@ -8,7 +8,7 @@ function calcLeafHashes(records) {
   let merkleElements = [];
   for (let i = 0; i < records.length; i++) {
     const entryHash = keccakFromString(
-      /*i.toString() +*/ records[i].address + records[i].amount // Index is added for cases where addresses appear multiple times
+      records[i].index + records[i].address + records[i].amount // Index is added for cases where addresses appear multiple times
     ).toString("hex");
 
     merkleElements.push(entryHash);
