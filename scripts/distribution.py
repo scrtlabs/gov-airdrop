@@ -9,7 +9,8 @@ def main():
     ychad = accounts.at("0xFEB4acf3df3cDEA7399794D0869ef76A6EfAff52")
 
     dai = interface.ERC20('0x6B175474E89094C44Da98b954EedeAC495271d0F')
-    distributor = MerkleDistributor.deploy(dai, tree['merkleRoot'], {'from': ychad})
+    distributor = MerkleDistributor.deploy(
+        dai, tree['merkleRoot'], {'from': ychad})
 
     dai.transfer(distributor, tree['tokenTotal'], {'from': ychad})
 
@@ -19,7 +20,8 @@ def main():
 
         balance = dai.balanceOf(address)
         distributor.claim(
-            claim['index'], address, claim['amount'], claim['proof'], 0, {'from': ychad}
+            claim['index'], address, claim['amount'], claim['proof'], 0, {
+                'from': ychad}
         )
 
         assert dai.balanceOf(address) == balance + claim['amount']

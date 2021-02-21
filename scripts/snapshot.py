@@ -55,21 +55,6 @@ def cached(path):
 #     return valfilter(bool, dict(balances.most_common()))
 
 
-@cached('snapshot/01-balances.toml')
-def step_01():
-    print('step 01. snapshot token balances.')
-    balances = defaultdict(Counter)  # token -> user -> balance
-
-    balances["0xe342c08eB93C1886B0c277936a2cc6B6FE5C1dB3"] = 100
-    balances["0x25823049970b7825cbA28ff31907bB3D7585CC9E"] = 12345
-    # for name, address in TOKENS.items():
-    #     print(f'processing {name}')
-    #     balances[name] = transfers_to_balances(str(address))
-    #     assert min(balances[name].values()) >= 0, 'negative balances found'
-
-    return balances
-
-
 class MerkleTree:
     def __init__(self, elements):
         self.elements = sorted(set(web3.keccak(hexstr=el) for el in elements))
@@ -110,6 +95,27 @@ class MerkleTree:
         return web3.keccak(b''.join(sorted([a, b])))
 
 
+@cached('snapshot/01-balances.toml')
+def step_01():
+    print('step 01. snapshot token balances.')
+    balances = defaultdict(Counter)  # token -> user -> balance
+
+    balances["0xe342c08eB93C1886B0c277936a2cc6B6FE5C1dB3"] = 100
+    balances["0x25823049970b7825cbA28ff31907bB3D7585CC9E"] = 12345
+    balances["0xe8159977970062d52a2CCff47844B759832eE0AA"] = 11
+    # balances["0x25823049970b7825cbA28ff31907bB3D7585CC9E"] = 1233345
+    # balances["0xe342c08eB93C1886B0c277936a2cc6B6FE5C1dB3"] = 102120
+    # balances["0x25823049970b7825cbA28ff31907bB3D7585CC9E"] = 12321345
+    # balances["0xe342c08eB93C1886B0c277936a2cc6B6FE5C1dB3"] = 103210
+    # balances["0x25823049970b7825cbA28ff31907bB3D7585CC9E"] = 122222345
+    # for name, address in TOKENS.items():
+    #     print(f'processing {name}')
+    #     balances[name] = transfers_to_balances(str(address))
+    #     assert min(balances[name].values()) >= 0, 'negative balances found'
+
+    return balances
+
+
 @cached('snapshot/07-merkle-distribution.json')
 def step_07(balances):
     elements = [(index, account, amount)
@@ -122,7 +128,7 @@ def step_07(balances):
         'tokenTotal': hex(sum(balances.values())),
         'claims': {
             user: {'index': index, 'amount': hex(
-                amount), 'proof': tree.get_proof(nodes[index])}
+                amount), 'proof': treprint(self.elements)e.get_proof(nodes[index])}
             for index, user, amount in elements
         },
     }
