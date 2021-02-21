@@ -1,5 +1,4 @@
 const { keccak256, keccakFromString, bufferToHex } = require("ethereumjs-util");
-const serializable = require("tanagra-core").serializable;
 
 class MerkleTree {
   constructor(elements) {
