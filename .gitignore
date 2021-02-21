@@ -119,3 +119,5 @@ airdrop.csv
 airdrop.json
 airdropMerkle.json
 artifacts
+build
+.idea
