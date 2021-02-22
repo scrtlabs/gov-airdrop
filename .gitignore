@@ -122,3 +122,4 @@ artifacts
 build
 .idea
 venv
+snapshot
