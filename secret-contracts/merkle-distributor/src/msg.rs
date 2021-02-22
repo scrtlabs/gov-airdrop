@@ -5,29 +5,29 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct InitMsg {
     pub token_addr: HumanAddr,
-    pub token_hash: Binary,
-    pub merkle_root: Binary,
+    pub token_hash: String,
+    pub merkle_root: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum HandleMsg {
     Claim {
-        index: Uint128,
-        address: HumanAddr,
-        amount: Uint128,
-        proof: Binary,
+        index: u128,
+        hex_address: String,
+        amount: u128,
+        proof: String,
     },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    IsClaimed { index: Uint128 },
+    IsClaimed { index: u128 },
 }
 
-// We define a custom struct for each query response
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct IsClaimedResponse {
-    pub claimed: bool,
-}
+// // We define a custom struct for each query response
+// #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+// pub struct IsClaimedResponse {
+//     pub claimed: bool,
+// }

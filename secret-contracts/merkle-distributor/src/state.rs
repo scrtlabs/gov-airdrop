@@ -9,8 +9,9 @@ pub static CONFIG_KEY: &[u8] = b"config";
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct State {
     pub token_addr: HumanAddr,
-    pub token_hash: Binary,
-    pub merkle_root: Binary,
+    pub token_hash: String,
+    pub merkle_root: String,
+    pub claimed_bitmap: Vec<u128>,
 }
 
 pub fn config<S: Storage>(storage: &mut S) -> Singleton<S, State> {

@@ -1,4 +1,5 @@
 pub mod contract;
+mod merkle_proof;
 pub mod msg;
 pub mod state;
 

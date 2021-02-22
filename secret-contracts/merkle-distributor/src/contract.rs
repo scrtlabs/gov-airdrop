@@ -1,10 +1,10 @@
 use cosmwasm_std::{
     to_binary, Api, Binary, Env, Extern, HandleResponse, InitResponse, Querier, StdError,
-    StdResult, Storage,
+    StdResult, Storage, Uint128,
 };
 use web3::signing::keccak256;
 
-use crate::msg::{HandleMsg, InitMsg, IsClaimedResponse, QueryMsg};
+use crate::msg::{HandleMsg, InitMsg, QueryMsg};
 use crate::state::{config, config_read, State};
 
 pub fn init<S: Storage, A: Api, Q: Querier>(
@@ -16,6 +16,7 @@ pub fn init<S: Storage, A: Api, Q: Querier>(
         token_addr: msg.token_addr,
         token_hash: msg.token_hash,
         merkle_root: msg.merkle_root,
+        claimed_bitmap: vec![],
     };
 
     config(&mut deps.storage).save(&state)?;
@@ -29,15 +30,13 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
     msg: HandleMsg,
 ) -> StdResult<HandleResponse> {
     match msg {
-        HandleMsg::Claim { .. } => claim(deps, env),
+        HandleMsg::Claim {
+            index,
+            hex_address,
+            amount,
+            proof,
+        } => claim(deps, env, index, hex_address, amount, proof),
     }
-}
-
-pub fn claim<S: Storage, A: Api, Q: Querier>(
-    deps: &mut Extern<S, A, Q>,
-    _env: Env,
-) -> StdResult<HandleResponse> {
-    unimplemented!()
 }
 
 pub fn query<S: Storage, A: Api, Q: Querier>(
@@ -45,13 +44,25 @@ pub fn query<S: Storage, A: Api, Q: Querier>(
     msg: QueryMsg,
 ) -> StdResult<Binary> {
     match msg {
-        QueryMsg::IsClaimed { .. } => to_binary(&is_claimed(deps)),
+        QueryMsg::IsClaimed { index } => to_binary(&is_claimed(deps, index)),
     }
+}
+
+pub fn claim<S: Storage, A: Api, Q: Querier>(
+    deps: &mut Extern<S, A, Q>,
+    _env: Env,
+    index: u128,
+    hex_address: String,
+    amount: u128,
+    proof: String,
+) -> StdResult<HandleResponse> {
+    unimplemented!()
 }
 
 fn is_claimed<S: Storage, A: Api, Q: Querier>(
     deps: &Extern<S, A, Q>,
-) -> StdResult<IsClaimedResponse> {
+    index: u128,
+) -> StdResult<bool> {
     unimplemented!()
 }
 
