@@ -16,7 +16,7 @@ fn is_correct_order(f: [u8; 32], s: [u8; 32]) -> bool {
     true
 }
 
-fn verify_proof(proof: Vec<[u8; 32]>, root: [u8; 32], leaf: [u8; 32]) -> bool {
+pub fn verify_proof(proof: Vec<[u8; 32]>, root: [u8; 32], leaf: [u8; 32]) -> bool {
     let mut computed_hash = leaf.clone();
 
     for proof_el in proof {
@@ -34,7 +34,7 @@ fn verify_proof(proof: Vec<[u8; 32]>, root: [u8; 32], leaf: [u8; 32]) -> bool {
     computed_hash == root
 }
 
-fn encode_as_merkle_leaf(index: u128, addr: String, amount: u128) -> Vec<u8> {
+pub fn encode_as_merkle_leaf(index: u128, addr: &[u8] /*String*/, amount: u128) -> Vec<u8> {
     let mut encoded = vec![];
 
     // Encode index
@@ -45,7 +45,7 @@ fn encode_as_merkle_leaf(index: u128, addr: String, amount: u128) -> Vec<u8> {
     encoded.extend_from_slice(&index_bytes);
 
     // Encode address
-    encoded.extend_from_slice(&hex::decode(addr).unwrap());
+    encoded.extend_from_slice(/*&hex::decode(*/ addr /*).unwrap()*/);
 
     // Encode amount
     // This essentially encodes it as u256 to match Ethereum encoding

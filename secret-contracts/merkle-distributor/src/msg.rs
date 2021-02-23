@@ -14,9 +14,9 @@ pub struct InitMsg {
 pub enum HandleMsg {
     Claim {
         index: u128,
-        hex_address: String,
+        address: HumanAddr,
         amount: u128,
-        proof: String,
+        proof: Vec<String>,
     },
 }
 
