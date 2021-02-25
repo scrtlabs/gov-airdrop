@@ -40,6 +40,6 @@ secret-toolkit = { git = "https://github.com/enigmampc/secret-toolkit" }
 schemars = "0.7"
 serde = { version = "1.0.103", default-features = false, features = ["derive"] }
 snafu = { version = "0.6.3" }
-web3 = "0.14.0"
+web3 = { version ="0.14.0", default-features = false, features = ["signing"] }
 hex = "0.4.2"
 byteorder = "1.4.2"
