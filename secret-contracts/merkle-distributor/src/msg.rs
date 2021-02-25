@@ -13,9 +13,9 @@ pub struct InitMsg {
 #[serde(rename_all = "snake_case")]
 pub enum HandleMsg {
     Claim {
-        index: u128,
+        index: Uint128,
         address: HumanAddr,
-        amount: u128,
+        amount: Uint128,
         proof: Vec<String>,
     },
 }
@@ -23,11 +23,5 @@ pub enum HandleMsg {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    IsClaimed { index: u128 },
+    IsClaimed { index: Uint128 },
 }
-
-// // We define a custom struct for each query response
-// #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-// pub struct IsClaimedResponse {
-//     pub claimed: bool,
-// }

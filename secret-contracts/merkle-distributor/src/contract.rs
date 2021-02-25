@@ -1,5 +1,5 @@
 use cosmwasm_std::{
-    to_binary, Api, Binary, Env, Extern, HandleResponse, HumanAddr, InitResponse, Querier,
+    log, to_binary, Api, Binary, Env, Extern, HandleResponse, HumanAddr, InitResponse, Querier,
     StdError, StdResult, Storage, Uint128,
 };
 use secret_toolkit::snip20;
@@ -40,7 +40,7 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
             address,
             amount,
             proof,
-        } => claim(deps, env, index, address, amount, proof),
+        } => claim(deps, env, index.u128(), address, amount.u128(), proof),
     }
 }
 
@@ -49,7 +49,7 @@ pub fn query<S: Storage, A: Api, Q: Querier>(
     msg: QueryMsg,
 ) -> StdResult<Binary> {
     match msg {
-        QueryMsg::IsClaimed { index } => to_binary(&is_claimed(deps, index)),
+        QueryMsg::IsClaimed { index } => to_binary(&is_claimed(deps, index.u128())),
     }
 }
 
@@ -61,7 +61,7 @@ pub fn claim<S: Storage, A: Api, Q: Querier>(
     amount: u128,
     proof: Vec<String>,
 ) -> StdResult<HandleResponse> {
-    let is_claimed = is_claimed(deps, index)?;
+    let is_claimed = is_claimed(deps, index);
     if is_claimed {
         return Err(StdError::generic_err("drop already claimed"));
     }
@@ -95,7 +95,7 @@ pub fn claim<S: Storage, A: Api, Q: Querier>(
             state.token_hash,
             state.token_addr,
         )?],
-        log: vec![],
+        log: vec![log("status", "success")],
         data: None,
     })
 }
@@ -115,10 +115,7 @@ fn set_claimed<S: Storage, A: Api, Q: Querier>(deps: &mut Extern<S, A, Q>, index
         .unwrap();
 }
 
-pub fn is_claimed<S: Storage, A: Api, Q: Querier>(
-    deps: &Extern<S, A, Q>,
-    index: u128,
-) -> StdResult<bool> {
+pub fn is_claimed<S: Storage, A: Api, Q: Querier>(deps: &Extern<S, A, Q>, index: u128) -> bool {
     let claimed_bitmap = TypedStore::attach(&deps.storage);
 
     let mut claimed_word_index = [0u8; 16];
@@ -128,12 +125,99 @@ pub fn is_claimed<S: Storage, A: Api, Q: Querier>(
     let claimed_bit_index = index % 128;
     let mask = (1 << claimed_bit_index);
 
-    Ok(claimed_word & mask == mask)
+    claimed_word & mask == mask
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use cosmwasm_std::testing::{mock_dependencies, mock_env};
+    use crate::msg::HandleMsg::Claim;
+    use cosmwasm_std::testing::{mock_dependencies, mock_env, MockApi, MockQuerier, MockStorage};
     use cosmwasm_std::{coins, from_binary, StdError};
+
+    fn init_helper() -> (
+        StdResult<InitResponse>,
+        Extern<MockStorage, MockApi, MockQuerier>,
+    ) {
+        let mut deps = mock_dependencies(20, &[]);
+        let env = mock_env("admin", &[]);
+
+        let init_msg = InitMsg {
+            token_addr: Default::default(),
+            token_hash: "".to_string(),
+            merkle_root: "44cdb551dd2a331bed89246a24f515d12316740f8b53df8df2d91e96899e3bf7"
+                .to_string(),
+        };
+
+        (init(&mut deps, env, init_msg), deps)
+    }
+
+    #[test]
+    #[ignore] // Apparently the `canonicalize_address` function doesn't work for real addresses in `MockApi`
+    fn test_claim() {
+        let (init_result, mut deps) = init_helper();
+
+        // Externally built MerkleTree
+        let address = HumanAddr("secret1gs8hau7q8xcya2jum7anj9ap47hw96rmhs2smv".to_string());
+        let claim_msg = Claim {
+            index: 2,
+            address,
+            amount: 11,
+            proof: vec![
+                "88f359f9f9d190245e8a0d52959a46992170360d4feacd2ff61d6ef44669203f".to_string(),
+            ],
+        };
+
+        let handle_response = handle(&mut deps, mock_env("doesntmatter", &[]), claim_msg).unwrap();
+        assert_eq!(handle_response.log[0], log("status", "success"));
+    }
+
+    #[test]
+    fn test_set_claimed() {
+        let (init_result, mut deps) = init_helper();
+
+        let index: u128 = 1;
+        let is_claimed_query = QueryMsg::IsClaimed { index: index };
+
+        let query_result: bool =
+            from_binary(&query(&deps, is_claimed_query.clone()).unwrap()).unwrap();
+        assert!(!query_result);
+
+        set_claimed(&mut deps, index);
+        let query_result: bool = from_binary(&query(&deps, is_claimed_query).unwrap()).unwrap();
+        assert!(query_result);
+
+        let index: u128 = 128;
+        let is_claimed_query = QueryMsg::IsClaimed { index: index };
+
+        let query_result: bool =
+            from_binary(&query(&deps, is_claimed_query.clone()).unwrap()).unwrap();
+        assert!(!query_result);
+
+        set_claimed(&mut deps, index);
+        let query_result: bool = from_binary(&query(&deps, is_claimed_query).unwrap()).unwrap();
+        assert!(query_result);
+
+        let index: u128 = 160000;
+        let is_claimed_query = QueryMsg::IsClaimed { index: index };
+
+        let query_result: bool =
+            from_binary(&query(&deps, is_claimed_query.clone()).unwrap()).unwrap();
+        assert!(!query_result);
+
+        set_claimed(&mut deps, index);
+        let query_result: bool = from_binary(&query(&deps, is_claimed_query).unwrap()).unwrap();
+        assert!(query_result);
+
+        let index: u128 = u128::MAX;
+        let is_claimed_query = QueryMsg::IsClaimed { index: index };
+
+        let query_result: bool =
+            from_binary(&query(&deps, is_claimed_query.clone()).unwrap()).unwrap();
+        assert!(!query_result);
+
+        set_claimed(&mut deps, index);
+        let query_result: bool = from_binary(&query(&deps, is_claimed_query).unwrap()).unwrap();
+        assert!(query_result);
+    }
 }
