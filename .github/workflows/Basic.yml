@@ -10,7 +10,7 @@ jobs:
     name: Test Suite
     runs-on: ubuntu-latest
     steps:
-      - run: cd secret-contracts/merkle-distributor
+#      - run: cd secret-contracts/merkle-distributor
       - name: Checkout sources
         uses: actions/checkout@v2
 
