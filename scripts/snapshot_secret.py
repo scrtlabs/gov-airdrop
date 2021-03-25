@@ -95,30 +95,15 @@ class MerkleTree:
         return web3.keccak(b''.join(sorted([a, b])))
 
 
-@cached('snapshot/01-balances.toml')
+@cached('snapshot_secret/01-balances.toml')
 def step_01():
-    # print('step 01. snapshot token balances.')
-    # balances = defaultdict(Counter)  # token -> user -> balance
-    #
-    # balances["0xb225298d734a0d74911303532a5dffb2b50efe7c"] = 100
-    # balances["0x838bb0f606fee4de590bb9588e3b6fbdefd356c9"] = 12345
-    # balances["0x440f7ef3c039b04eaa5cdfbb3917a1afaee2e87b"] = 11
-    # balances["0x25823049970b7825cbA28ff31907bB3D7585CC9E"] = 1233345
-    # balances["0xe342c08eB93C1886B0c277936a2cc6B6FE5C1dB3"] = 102120
-    # balances["0x25823049970b7825cbA28ff31907bB3D7585CC9E"] = 12321345
-    # balances["0xe342c08eB93C1886B0c277936a2cc6B6FE5C1dB3"] = 103210
-    # balances["0x25823049970b7825cbA28ff31907bB3D7585CC9E"] = 122222345
-    # for name, address in TOKENS.items():
-    #     print(f'processing {name}')
-    #     balances[name] = transfers_to_balances(str(address))
-    #     assert min(balances[name].values()) >= 0, 'negative balances found'
-
+    os.system("node scripts/bech32_to_bytes.js")
     balances = toml.load("snapshot/00-bytes.toml")
 
     return balances
 
 
-@cached('snapshot/07-merkle-distribution.json')
+@cached('snapshot_secret/07-merkle-distribution.json')
 def step_07(balances):
     elements = [(index, account, amount)
                 for index, (account, amount) in enumerate(balances.items())]

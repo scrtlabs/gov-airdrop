@@ -177,7 +177,9 @@ mod tests {
         let (init_result, mut deps) = init_helper();
 
         let index: u128 = 1;
-        let is_claimed_query = QueryMsg::IsClaimed { index: index };
+        let is_claimed_query = QueryMsg::IsClaimed {
+            index: Uint128(index),
+        };
 
         let query_result: bool =
             from_binary(&query(&deps, is_claimed_query.clone()).unwrap()).unwrap();
@@ -188,7 +190,9 @@ mod tests {
         assert!(query_result);
 
         let index: u128 = 128;
-        let is_claimed_query = QueryMsg::IsClaimed { index: index };
+        let is_claimed_query = QueryMsg::IsClaimed {
+            index: Uint128(index),
+        };
 
         let query_result: bool =
             from_binary(&query(&deps, is_claimed_query.clone()).unwrap()).unwrap();
@@ -199,7 +203,9 @@ mod tests {
         assert!(query_result);
 
         let index: u128 = 160000;
-        let is_claimed_query = QueryMsg::IsClaimed { index: index };
+        let is_claimed_query = QueryMsg::IsClaimed {
+            index: Uint128(index),
+        };
 
         let query_result: bool =
             from_binary(&query(&deps, is_claimed_query.clone()).unwrap()).unwrap();
@@ -210,7 +216,9 @@ mod tests {
         assert!(query_result);
 
         let index: u128 = u128::MAX;
-        let is_claimed_query = QueryMsg::IsClaimed { index: index };
+        let is_claimed_query = QueryMsg::IsClaimed {
+            index: Uint128(index),
+        };
 
         let query_result: bool =
             from_binary(&query(&deps, is_claimed_query.clone()).unwrap()).unwrap();
